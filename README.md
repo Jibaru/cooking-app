@@ -16,8 +16,9 @@ Currently in progress
 
 Currently in Progress
 
-### Images and Designs credits:
-
+### Images and Designs based on credits:
+- [Daily UI 040 - Recipe](https://dribbble.com/shots/6663551-Daily-UI-040-Recipe)
+- [Cooking by recipe - Mobile App](https://dribbble.com/shots/9881568-Cooking-by-recipe-Mobile-App)
 - [Tasty fresh appetizing italian food ingredients on dark background](https://pixelsmoothie.eu/photos/tasty-fresh-appetizing-italian-food-ingredients-on-dark-background-ready-to-cook-home-italian-healthy-food-cooking-concept-toning-free-stock-photo/)
 
 
