@@ -18,7 +18,7 @@ class CookingApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       title: 'Cooking App',
       routes: _router.routes,
-      initialRoute: 'login',
+      initialRoute: '/login',
       //onUnknownRoute: _router.unknownRouteSolver,
     );
   }

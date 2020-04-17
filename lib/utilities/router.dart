@@ -1,4 +1,5 @@
 
+import 'package:cooking_app/screens/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cooking_app/screens/login_screen.dart';
 
@@ -9,7 +10,8 @@ class Router {
   static final Router _router = Router._internal();
 
   final Map<String, WidgetBuilder> _routes = {
-    'login': (BuildContext context) => LoginScreen()
+    '/login': (BuildContext context) => LoginScreen(),
+    '/main': (BuildContext context) => MainScreen()
   };
 
   Map<String, WidgetBuilder> get routes => _routes;

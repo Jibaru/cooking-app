@@ -1,4 +1,6 @@
+import 'package:cooking_app/screens/main_screen.dart';
 import 'package:cooking_app/widgets/login_text_form_field.dart';
+import 'package:cooking_app/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cooking_app/utilities/custom_colors.dart';
 
@@ -30,7 +32,6 @@ class LoginScreen extends StatelessWidget {
             image: AssetImage('assets/img/login_background.jpg'),
             fit: BoxFit.cover,
           ),
-
         ),
         child: SingleChildScrollView(
           child: Padding(
@@ -42,9 +43,15 @@ class LoginScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  'Welcome!', 
-                  style: _titleStyle,
+                Hero(
+                  tag: 'cook-hero-title',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'Welcome!', 
+                      style: _titleStyle,
+                    )
+                  ),
                 ),
                 Text(
                   "Time to cook! Let's Sign In", 
@@ -71,16 +78,16 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                FlatButton(
-                  onPressed: (){},
-                  color: CustomColors.yellow,
-                  child: Text(
-                    'SIGN IN',
-                    style: _titleStyle.copyWith(
-                      fontSize: 17,
-                      fontWeight: FontWeight.normal
+                Hero(
+                  tag: 'cook-hero-01',
+                  child: RoundedButton(
+                    text: 'SIGN IN',
+                    onTap: () => Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (_) => MainScreen()
+                      )
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
                 Padding(
