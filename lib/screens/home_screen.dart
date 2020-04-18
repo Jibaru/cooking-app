@@ -135,7 +135,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         childAspectRatio: RecipeGridItem.maxWidth / RecipeGridItem.maxHeight
                       ),
                       itemBuilder: (context, index) {
-                        return RecipeGridItem();
+                        return RecipeGridItem(
+                          tag: '$index-tag',
+                        );
                       },
                     ),
                   )
