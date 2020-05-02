@@ -10,7 +10,7 @@ flutter packages get
 
 ## Connect to backend
 
-Currently in progress
+- [Node.js Cooking App Server](https://github.com/Jibaru/cooking-app-backend)
 
 ## Checkout on PlayStore
 
