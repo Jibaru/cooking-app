@@ -1,6 +1,7 @@
 import 'package:cooking_app/widgets/recipe_filter_bar.dart';
 import 'package:cooking_app/widgets/recipe_grid_item.dart';
 import 'package:cooking_app/widgets/recipe_search_bar.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final int _animationMilliseconds = 350;
 
-  int _recipes = 5;
+  //int _recipes = 5;
   double _cardWhiteHeight;
   final double _headerHeight = 200;
 
@@ -124,22 +125,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: (option) => print(option),
                   ),
                   Container(
-                    height: 300,
+                    height: 200,
                     width: double.maxFinite,
-                    child: GridView.builder(
-                      itemCount: _recipes,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 5.0,
-                        mainAxisSpacing: 5.0,
-                        childAspectRatio: RecipeGridItem.maxWidth / RecipeGridItem.maxHeight
+                    child: StaggeredGridView.countBuilder(
+                      crossAxisCount: 2,
+                      itemCount: 15,
+                      itemBuilder: (BuildContext context, int index) => RecipeGridItem(
+                        tag: '$index-tag',
                       ),
-                      itemBuilder: (context, index) {
-                        return RecipeGridItem(
-                          tag: '$index-tag',
-                        );
-                      },
-                    ),
+                      mainAxisSpacing: 0.0,
+                      crossAxisSpacing: 0.0,
+                      staggeredTileBuilder: (int index) => StaggeredTile.count(1, 1.6),
+                    )
                   )
                 ],
               )
