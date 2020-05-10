@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class RecipeScreen extends StatefulWidget {
 
-  String tag;
+  final String tag;
 
   RecipeScreen({
     Key key,
