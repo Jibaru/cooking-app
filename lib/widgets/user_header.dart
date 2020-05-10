@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,7 @@ class UserHeader extends StatelessWidget {
         vertical: 15.0
       ),
       decoration: BoxDecoration(
+        color: CustomColors.yellow50,
         image: DecorationImage(
           image: backgroundImage,
           fit: BoxFit.cover
@@ -57,9 +59,11 @@ class UserHeader extends StatelessWidget {
       child: Column(
         children: <Widget>[
           _headerOptions(context),
-          CircleAvatar(
-            radius: avatarRadius,
-            backgroundImage: NetworkImage('https://images.vexels.com/media/users/3/145908/preview2/52eabf633ca6414e60a7677b0b917d92-creador-de-avatar-masculino.jpg'),
+          BounceInDown(
+            child: CircleAvatar(
+              radius: avatarRadius,
+              backgroundImage: NetworkImage('https://images.vexels.com/media/users/3/145908/preview2/52eabf633ca6414e60a7677b0b917d92-creador-de-avatar-masculino.jpg'),
+            ),
           ),
           Text(
             'username',
