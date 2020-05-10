@@ -1,7 +1,8 @@
-import 'package:cooking_app/screens/recipe_screen.dart';
+//import 'package:cooking_app/screens/recipe_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:cooking_app/screens/home_screen.dart';
+import 'package:cooking_app/screens/user_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     _screens = [
       HomeScreen(),
       HomeScreen(),
-      HomeScreen(),
+      UserScreen(),
     ];
   }
 
