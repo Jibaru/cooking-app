@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 maxHeight: MediaQuery.of(context).size.height
               ),
               duration: Duration(milliseconds: _animationMilliseconds),
-              curve: Curves.bounceInOut,
+              curve: Curves.decelerate,
               width: MediaQuery.of(context).size.width,
               height: _cardWhiteHeight,
               padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: (option) => print(option),
                   ),
                   Container(
-                    height: 200,
+                    height: _cardWhiteHeight - 90,
                     width: double.maxFinite,
                     child: StaggeredGridView.countBuilder(
                       crossAxisCount: 2,
