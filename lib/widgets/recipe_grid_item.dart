@@ -38,6 +38,7 @@ class RecipeGridItem extends StatelessWidget {
             _createCookImage(true),
             Text(
               'Pizza Hawaii',
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -46,6 +47,7 @@ class RecipeGridItem extends StatelessWidget {
             ),
             Text(
               'Ready in 30 minutes',
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.black54
               )
