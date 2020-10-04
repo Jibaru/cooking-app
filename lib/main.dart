@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'utilities/router.dart';
 
-void main(){
-
+void main() {
   runApp(CookingApp());
-
 }
 
 class CookingApp extends StatelessWidget {
-
-  final Router _router = Router();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      darkTheme: ThemeData.dark(),
+      theme: Theme.of(context),
       title: 'Cooking App',
-      routes: _router.routes,
-      initialRoute: '/login',
+      routes: Router.routes,
+      initialRoute: '/home',
       //onUnknownRoute: _router.unknownRouteSolver,
     );
   }
