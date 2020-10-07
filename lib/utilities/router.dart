@@ -1,23 +1,24 @@
 import 'package:cooking_app/screens/home_screen.dart';
-import 'package:cooking_app/screens_old/main_screen.dart';
+import 'package:cooking_app/screens/profile_screen.dart';
+import 'package:cooking_app/screens/setting_screen.dart';
+import 'package:cooking_app/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:cooking_app/screens_old/login_screen.dart';
+import 'package:cooking_app/screens/login_screen.dart';
 
 typedef RouteFactory = Route<dynamic> Function(RouteSettings settings);
 
 abstract class Router {
   static final Map<String, String> routesNamed = {
     '/login': 'Iniciar Sesión',
-    '/main': 'Principal',
-    '/home': 'Inicio'
+    '/setting': 'Configuración',
+    '/profile': 'Perfil',
   };
 
   static final Map<String, WidgetBuilder> routes = {
+    '/home': (BuildContext context) => HomeScreen(),
     '/login': (BuildContext context) => LoginScreen(),
-    '/main': (BuildContext context) => MainScreen(),
-    '/home': (BuildContext context) => HomeScreen()
+    '/signin': (BuildContext context) => SigninScreen(),
+    '/setting': (BuildContext context) => SettingScreen(),
+    '/profile': (BuildContext context) => ProfileScreen(),
   };
-
-  static Future<void> pushVoid(BuildContext context, String route) =>
-      Navigator.push(context, MaterialPageRoute(builder: routes[route]));
 }
