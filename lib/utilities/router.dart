@@ -1,4 +1,5 @@
 import 'package:cooking_app/screens/home_screen.dart';
+import 'package:cooking_app/screens/notification_screen.dart';
 import 'package:cooking_app/screens/profile_screen.dart';
 import 'package:cooking_app/screens/setting_screen.dart';
 import 'package:cooking_app/screens/signin_screen.dart';
@@ -12,6 +13,7 @@ abstract class Router {
     '/login': 'Iniciar Sesión',
     '/setting': 'Configuración',
     '/profile': 'Perfil',
+    '/notification': 'Notificaciones',
   };
 
   static final Map<String, WidgetBuilder> routes = {
@@ -20,5 +22,6 @@ abstract class Router {
     '/signin': (BuildContext context) => SigninScreen(),
     '/setting': (BuildContext context) => SettingScreen(),
     '/profile': (BuildContext context) => ProfileScreen(),
+    '/notification': (BuildContext context) => NotificationScreen(),
   };
 }
