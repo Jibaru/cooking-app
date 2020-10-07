@@ -1,3 +1,4 @@
+import 'package:cooking_app/utilities/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'utilities/router.dart';
 
@@ -10,7 +11,10 @@ class CookingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: Theme.of(context),
+      theme: Theme.of(context).copyWith(
+        appBarTheme: AppTheme.appBarTheme(context),
+        floatingActionButtonTheme: AppTheme.floatingActionButtonTheme(context),
+      ),
       title: 'Cooking App',
       routes: Router.routes,
       initialRoute: '/home',
