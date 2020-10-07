@@ -86,8 +86,7 @@ class AppDrawer extends StatelessWidget {
                     RoutingTileDrawer(
                       title: 'Configuración',
                       iconData: Icons.settings,
-                      // TODO: Redirect to AppSettingsScreen
-                      onTap: () {},
+                      onTap: () => Navigator.pushNamed(context, '/setting'),
                     ),
                   ],
                 ),
