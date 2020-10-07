@@ -1,3 +1,4 @@
+import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:cooking_app/utilities/router.dart';
 import 'package:cooking_app/widgets/app_drawer.dart';
 import 'package:cooking_app/widgets/list_recipe.dart';
@@ -40,7 +41,11 @@ class HomeScreen extends StatelessWidget {
       body: ListRecipe(),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: CustomColors.blue,
         // TODO: Add function to redirect to create recipe screen
         onPressed: () => {},
       ),
