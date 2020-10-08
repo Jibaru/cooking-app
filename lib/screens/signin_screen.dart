@@ -1,5 +1,5 @@
 import 'package:cooking_app/utilities/regex_validator.dart';
-import 'package:cooking_app/widgets/app_auth_hyperlinkdart';
+import 'package:cooking_app/widgets/app_auth_hyperlink.dart';
 import 'package:cooking_app/widgets/app_co_footer.dart';
 import 'package:cooking_app/widgets/app_raised_button.dart';
 import 'package:cooking_app/widgets/app_text_form_field.dart';
