@@ -1,6 +1,6 @@
-import 'package:cooking_app/utilities/custom_colors.dart';
+import 'package:cooking_app/screens/recipe_view_screen.dart';
+import 'package:cooking_app/widgets/star_row.dart';
 import 'package:flutter/material.dart';
-import 'package:cooking_app/extensions/double_extension.dart';
 
 class RecipeTile extends StatefulWidget {
   static const double aspectRatio = 3.5;
@@ -33,7 +33,10 @@ class _RecipeTileState extends State<RecipeTile> {
       ),
       child: InkWell(
         // TODO: Redirect to recipe view screen
-        onTap: () {},
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RecipeViewScreen()),
+        ),
         splashColor: Colors.black12,
         highlightColor: Colors.white60,
         child: Padding(
@@ -225,50 +228,5 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         ],
       ),
     );
-  }
-}
-
-/// [StarRow] show stars for valuated recipes
-class StarRow extends StatelessWidget {
-  final double value;
-  final double size;
-  StarRow({
-    this.size,
-    this.value = 0.0,
-  }) : assert(value >= 0.0);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: List.generate(
-          5,
-          (index) => Icon(
-            _defineIcon(index),
-            color: CustomColors.yellow,
-            size: size,
-          ),
-        ),
-      ),
-    );
-  }
-
-  IconData _defineIcon(int index) {
-    IconData iconData;
-
-    if (value.hasDecimals()) {
-      if (index + 1 <= value.toInt())
-        iconData = Icons.star;
-      else if (index + 1 == value.toInt() + 1)
-        iconData = Icons.star_half;
-      else
-        iconData = Icons.star_border;
-    } else {
-      if (index + 1 <= value)
-        iconData = Icons.star;
-      else
-        iconData = Icons.star_border;
-    }
-    return iconData;
   }
 }
