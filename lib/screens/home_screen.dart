@@ -46,8 +46,7 @@ class HomeScreen extends StatelessWidget {
           color: Colors.white,
         ),
         backgroundColor: CustomColors.blue,
-        // TODO: Add function to redirect to create recipe screen
-        onPressed: () => {},
+        onPressed: () => Navigator.pushNamed(context, '/recipe-create'),
       ),
     );
   }
