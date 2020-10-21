@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:cooking_app/mixins/pick_image_mixin.dart';
 import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:cooking_app/utilities/regex_validator.dart';
 import 'package:cooking_app/widgets/app_raised_button.dart';
@@ -293,9 +294,7 @@ class UserAvatar extends StatefulWidget {
   _UserAvatarState createState() => _UserAvatarState();
 }
 
-class _UserAvatarState extends State<UserAvatar> {
-  final ImagePicker _picker = ImagePicker();
-
+class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
   File _pickedFile;
 
   @override
@@ -353,11 +352,7 @@ class _UserAvatarState extends State<UserAvatar> {
               ),
               onPressed: () {
                 // TODO: Handle image
-                showModalBottomSheet(
-                  context: context,
-                  builder: _buildListSelection,
-                  elevation: 1.5,
-                );
+                showImagePickerBottomSheet(context);
               },
             ),
           ),
@@ -387,84 +382,10 @@ class _UserAvatarState extends State<UserAvatar> {
     }
   }
 
-  Widget _buildListSelection(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Icon(
-              Icons.camera_alt,
-              color: CustomColors.blue,
-            ),
-            title: Text(
-              'Cámara',
-              style: TextStyle(
-                color: Colors.black54,
-                fontFamily: 'ReemKufi',
-              ),
-            ),
-            trailing: Icon(
-              Icons.arrow_right,
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.camera).then((value) => null);
-            },
-          ),
-          Divider(
-            color: Colors.black12,
-            indent: 15.0,
-            endIndent: 15.0,
-            height: 0.0,
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.photo_library,
-              color: CustomColors.blue,
-            ),
-            title: Text(
-              'Galería',
-              style: TextStyle(
-                color: Colors.black54,
-                fontFamily: 'ReemKufi',
-              ),
-            ),
-            trailing: Icon(Icons.arrow_right),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.gallery).then((value) => null);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Display a camera or gallery to pick an image
-  /// Returns [true] if [_imageFile] is asigned with
-  /// new value, and [false] if not an error ocurred
-  /// The Error is visible on snackbar
-  Future<bool> _pickImage(ImageSource source) async {
-    try {
-      final file = await _picker.getImage(
-        source: source,
-        preferredCameraDevice: CameraDevice.rear,
-      );
-      setState(() {
-        if (file != null) {
-          _pickedFile = File(file.path);
-        }
-      });
-    } catch (e) {
-      if (Scaffold.of(context) != null) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('No se pudo cargar la imagen'),
-          backgroundColor: Colors.black,
-          duration: Duration(seconds: 2),
-        ));
-      }
-    }
+  @override
+  void onImagePicked(File file) {
+    setState(() {
+      _pickedFile = File(file.path);
+    });
   }
 }
