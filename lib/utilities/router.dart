@@ -1,6 +1,7 @@
 import 'package:cooking_app/screens/home_screen.dart';
 import 'package:cooking_app/screens/notification_screen.dart';
 import 'package:cooking_app/screens/profile_screen.dart';
+import 'package:cooking_app/screens/recipe_create_screen.dart';
 import 'package:cooking_app/screens/setting_screen.dart';
 import 'package:cooking_app/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,5 +24,6 @@ abstract class Router {
     '/setting': (BuildContext context) => SettingScreen(),
     '/profile': (BuildContext context) => ProfileScreen(),
     '/notification': (BuildContext context) => NotificationScreen(),
+    '/recipe-create': (BuildContext context) => RecipeCreateScreen()
   };
 }
