@@ -1,6 +1,7 @@
-import 'package:cooking_app/screens/recipe_view_screen.dart';
-import 'package:cooking_app/widgets/star_row.dart';
 import 'package:flutter/material.dart';
+
+import 'star_row.dart';
+import '../screens/recipe_view_screen.dart';
 
 class RecipeTile extends StatefulWidget {
   static const double aspectRatio = 3.5;

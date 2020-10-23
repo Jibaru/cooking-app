@@ -1,8 +1,8 @@
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/utilities/router.dart';
-import 'package:cooking_app/widgets/app_drawer.dart';
-import 'package:cooking_app/widgets/list_recipe.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/custom_colors.dart';
+import '../utils/router.dart';
+import '../widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _homeScreenScaffoldKey = GlobalKey();

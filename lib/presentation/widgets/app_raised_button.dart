@@ -1,5 +1,6 @@
-import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/custom_colors.dart';
 
 class AppRaisedButton extends StatelessWidget {
   final VoidCallback onPressed;

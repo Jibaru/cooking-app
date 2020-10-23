@@ -1,5 +1,6 @@
-import 'package:cooking_app/widgets/recipe_tile.dart';
 import 'package:flutter/material.dart';
+
+import 'recipe_tile.dart';
 
 class ListRecipe extends StatelessWidget {
   final List<String> _recipes = List.generate(10, (index) => null);

@@ -1,44 +1,34 @@
-import 'package:cooking_app/utilities/regex_validator.dart';
-import 'package:cooking_app/widgets/app_auth_hyperlink.dart';
-import 'package:cooking_app/widgets/app_co_footer.dart';
-import 'package:cooking_app/widgets/app_raised_button.dart';
-import 'package:cooking_app/widgets/app_text_form_field.dart';
 import 'package:flutter/material.dart';
 
-class SigninScreen extends StatefulWidget {
+import '../utils/custom_colors.dart';
+import '../utils/regex_validator.dart';
+import '../widgets/widgets.dart';
+
+class LoginScreen extends StatefulWidget {
   @override
-  _SigninScreenState createState() => _SigninScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SigninScreenState extends State<SigninScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final FocusNode _screenFocusNode = FocusNode();
-  final FocusNode _firstNameFocusNode = FocusNode();
-  final FocusNode _lastNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  final TextEditingController _firstNameTextEditingController =
-      TextEditingController();
-  final TextEditingController _lastNameTextEditingController =
-      TextEditingController();
   final TextEditingController _emailTextEditingController =
       TextEditingController();
-  final TextEditingController _passwordEditingController =
+  final TextEditingController _passwordTextEditingController =
       TextEditingController();
 
   bool _hasBeenValidated = false;
+  bool _keepLoggedIn = false;
 
   @override
   void dispose() {
-    _firstNameFocusNode.dispose();
-    _lastNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _screenFocusNode.dispose();
-    _firstNameTextEditingController.dispose();
-    _lastNameTextEditingController.dispose();
     _emailTextEditingController.dispose();
-    _passwordEditingController.dispose();
+    _passwordTextEditingController.dispose();
     super.dispose();
   }
 
@@ -52,7 +42,7 @@ class _SigninScreenState extends State<SigninScreen> {
           color: Colors.white,
           child: SafeArea(
             child: Stack(
-              children: [
+              children: <Widget>[
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -60,7 +50,22 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: <Widget>[
+                          Container(
+                            width: 180,
+                            height: 180,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  // TODO: Change to app Logo
+                                  image: NetworkImage(
+                                      'https://dummyimage.com/250/b5b5b5/fff'),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // TODO: Delete this? ?
+                          Text('App de Recetas :v'),
                           ConstrainedBox(
                             constraints: BoxConstraints(
                               minWidth: 250.0,
@@ -75,51 +80,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                     _formKey.currentState.validate();
                                 },
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
-                                    Text(
-                                      'Registro',
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontFamily: 'ReemKufi',
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                    AppTextFormField(
-                                      controller:
-                                          _firstNameTextEditingController,
-                                      focusNode: _firstNameFocusNode,
-                                      labelText: 'Nombres',
-                                      prefixIconData: Icons.person,
-                                      keyboardType: TextInputType.name,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (firstName) {
-                                        if (firstName.isEmpty) {
-                                          return 'Por favor ingrese un nombre';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          _lastNameFocusNode.requestFocus(),
-                                    ),
-                                    AppTextFormField(
-                                      controller:
-                                          _lastNameTextEditingController,
-                                      focusNode: _lastNameFocusNode,
-                                      labelText: 'Apellidos',
-                                      prefixIconData: Icons.text_fields,
-                                      keyboardType: TextInputType.name,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (lastName) {
-                                        if (lastName.isEmpty) {
-                                          return 'Por favor ingrese un apellido';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          _emailFocusNode.requestFocus(),
-                                    ),
                                     AppTextFormField(
                                       controller: _emailTextEditingController,
                                       focusNode: _emailFocusNode,
@@ -140,7 +102,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                           _passwordFocusNode.requestFocus(),
                                     ),
                                     AppTextFormField(
-                                      controller: _passwordEditingController,
+                                      controller:
+                                          _passwordTextEditingController,
                                       focusNode: _passwordFocusNode,
                                       labelText: 'Contraseña',
                                       obscureText: true,
@@ -158,39 +121,61 @@ class _SigninScreenState extends State<SigninScreen> {
                                           FocusScope.of(context)
                                               .requestFocus(_screenFocusNode),
                                     ),
+                                    Wrap(
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      alignment: WrapAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          'Mantener sesión guardada',
+                                          overflow: TextOverflow.visible,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'ReemKufi',
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        Switch.adaptive(
+                                          value: _keepLoggedIn,
+                                          activeColor: CustomColors.blue,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _keepLoggedIn = value;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
                           Hero(
                             tag: 'app-in-button-tag',
                             child: AppRaisedButton(
-                              text: 'Registrarse',
+                              text: 'Iniciar Sesión',
                               onPressed: () {
-                                if (!_screenFocusNode.hasFocus) {
+                                if (!_screenFocusNode.hasFocus)
                                   FocusScope.of(context)
                                       .requestFocus(_screenFocusNode);
-                                }
                                 if (!_hasBeenValidated)
                                   _hasBeenValidated = true;
                                 if (_formKey.currentState.validate()) {
-                                  // TODO: Form Validated, call a signin service
+                                  // TODO: Form Validated, call a login service
                                 }
                               },
                             ),
                           ),
                           AppAuthHyperlink(
                               padding: const EdgeInsets.only(top: 10.0),
-                              questionText: '¿Ya posees una cuenta?',
-                              hyperlinkText: 'Iniciar Sesión',
+                              questionText: '¿No tienes una cuenta?',
+                              hyperlinkText: 'Regístrate',
                               onTapHyperlink: () =>
                                   Navigator.pushReplacementNamed(
-                                      context, '/login')
-                              //Router.pushVoid(context, '/login'),
+                                      context, '/signin')
+                              //Router.pushVoid(context, '/signin'),
                               ),
                           AppCoFotter(
                             padding: const EdgeInsets.only(

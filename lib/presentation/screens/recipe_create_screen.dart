@@ -1,14 +1,11 @@
 import 'dart:io';
 
-import 'package:cooking_app/mixins/pick_image_mixin.dart';
-import 'package:cooking_app/widgets/app_number_select.dart';
-import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:flutter/material.dart';
+import 'package:drop_cap_text/drop_cap_text.dart';
 
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/widgets/app_text_field_dialog.dart';
-import 'package:cooking_app/widgets/app_text_form_field.dart';
-import 'package:cooking_app/widgets/app_time_select.dart';
+import '../mixins/pick_image_mixin.dart';
+import '../utils/custom_colors.dart';
+import '../widgets/widgets.dart';
 
 class RecipeCreateScreen extends StatefulWidget {
   @override

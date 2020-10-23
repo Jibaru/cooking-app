@@ -1,6 +1,7 @@
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/extensions/double_extension.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cooking_app/extensions/double_extension.dart';
+import '../utils/custom_colors.dart';
 
 /// [StarRow] show stars for valuated recipes
 class StarRow extends StatelessWidget {

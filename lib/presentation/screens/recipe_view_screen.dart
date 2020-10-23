@@ -1,11 +1,9 @@
-import 'dart:convert';
-
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/widgets/app_raised_button.dart';
-import 'package:cooking_app/widgets/star_row.dart';
-import 'package:drop_cap_text/drop_cap_text.dart';
-import 'package:cooking_app/extensions/list_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:drop_cap_text/drop_cap_text.dart';
+
+import '../utils/custom_colors.dart';
+import '../widgets/widgets.dart';
+import '../../extensions/list_extension.dart';
 
 final TextStyle titleTextStyle = const TextStyle(
   color: Colors.black87,

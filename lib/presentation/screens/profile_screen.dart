@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:cooking_app/mixins/pick_image_mixin.dart';
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/utilities/regex_validator.dart';
-import 'package:cooking_app/widgets/app_raised_button.dart';
-import 'package:cooking_app/widgets/app_text_form_field.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
+import '../mixins/pick_image_mixin.dart';
+import '../utils/custom_colors.dart';
+import '../utils/regex_validator.dart';
+import '../widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override

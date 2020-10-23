@@ -1,6 +1,7 @@
-import 'package:cooking_app/utilities/custom_colors.dart';
-import 'package:cooking_app/widgets/natural_number_select_button.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/custom_colors.dart';
+import 'natural_number_select_button.dart';
 
 class AppTimeSelect extends StatefulWidget {
   final String label;

@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:cooking_app/utilities/custom_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../utils/custom_colors.dart';
 
 mixin PickImageMixin {
   final ImagePicker _picker = ImagePicker();

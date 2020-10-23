@@ -1,8 +1,8 @@
-import 'package:cooking_app/widgets/app_text_form_field.dart';
-import 'package:cooking_app/widgets/natural_number_select_button.dart';
 import 'package:flutter/material.dart';
 
-class AppNumberSelect extends StatefulWidget {
+import 'app_text_form_field.dart';
+
+class AppTextFieldDialog extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final IconData suffixIconData;
@@ -10,9 +10,10 @@ class AppNumberSelect extends StatefulWidget {
   final FocusNode focusNode;
   final VoidCallback onEditingComplete;
   final ValueChanged<String> onChanged;
+  final FormFieldValidator<String> validator;
   final Widget Function(BuildContext) builder;
 
-  const AppNumberSelect({
+  const AppTextFieldDialog({
     Key key,
     this.controller,
     this.labelText,
@@ -21,22 +22,23 @@ class AppNumberSelect extends StatefulWidget {
     this.focusNode,
     this.onEditingComplete,
     this.onChanged,
-    this.builder,
+    this.validator,
+    @required this.builder,
   }) : super(key: key);
 
   @override
-  _AppNumberSelectState createState() => _AppNumberSelectState();
+  _AppTextFieldDialogState createState() => _AppTextFieldDialogState();
 }
 
-class _AppNumberSelectState extends State<AppNumberSelect> {
-  bool _isBottomSheetOpen = false;
+class _AppTextFieldDialogState extends State<AppTextFieldDialog> {
+  bool _isDialogOpen = false;
 
   @override
   void initState() {
     widget.focusNode?.addListener(() {
       if (widget.focusNode.hasFocus) {
-        if (!_isBottomSheetOpen) {
-          _showBottomSheet(context);
+        if (!_isDialogOpen) {
+          _showDialog(context);
         }
       }
     });
@@ -60,7 +62,7 @@ class _AppNumberSelectState extends State<AppNumberSelect> {
               onEditingComplete: widget.onEditingComplete,
               readOnly: true,
               onTap: (widget.focusNode == null)
-                  ? () => _showBottomSheet(context)
+                  ? () => _showDialog(context)
                   : null,
             ),
           ),
@@ -83,48 +85,16 @@ class _AppNumberSelectState extends State<AppNumberSelect> {
     );
   }
 
-  void _showBottomSheet(context) {
+  void _showDialog(BuildContext context) {
     Future.delayed(Duration(milliseconds: 100)).then(
       (_) {
-        _isBottomSheetOpen = true;
-        showModalBottomSheet(
+        _isDialogOpen = true;
+        showDialog(
           context: context,
-          builder: (context) {
-            return Container(
-              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Establezca la cantidad',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 18,
-                      fontFamily: 'ReemKufi',
-                    ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      NaturalNumberSelectButton(
-                        initialNumber: 1,
-                        min: 1,
-                        max: 10,
-                        onChange: (value) {
-                          setState(() {
-                            widget.controller?.text = '$value';
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
+          builder: widget.builder,
         ).then((_) {
           FocusScope.of(context).requestFocus(FocusNode());
-          _isBottomSheetOpen = false;
+          _isDialogOpen = false;
         });
       },
     );
