@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 
-import '../mixins/pick_image_mixin.dart';
 import '../utils/custom_colors.dart';
 import '../widgets/widgets.dart';
+
+import 'ingredient/ingredient_select_screen.dart';
 
 class RecipeCreateScreen extends StatefulWidget {
   @override
@@ -63,7 +62,7 @@ class _RecipeCreateScreenState extends State<RecipeCreateScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
-          RecipeImage(),
+          AppImageViewSelect(),
           AppTextFormField(
             controller: _recipeTitleTextEditingController,
             labelText: 'Nombre de la receta',
@@ -213,56 +212,6 @@ class _RecipeCreateScreenState extends State<RecipeCreateScreen> {
       ),
     );
   }
-}
-
-class RecipeImage extends StatefulWidget {
-  final void Function(File) onImagePicked;
-  const RecipeImage({
-    Key key,
-    this.onImagePicked,
-  }) : super(key: key);
-
-  @override
-  _RecipeImageState createState() => _RecipeImageState();
-}
-
-class _RecipeImageState extends State<RecipeImage>
-    with PickImageMixin, AutomaticKeepAliveClientMixin {
-  File _imageFile;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return GestureDetector(
-      onTap: () {
-        showImagePickerBottomSheet(context);
-      },
-      child: Container(
-        height: 200.0,
-        width: MediaQuery.of(context).size.width,
-        color: Colors.black12,
-        child: (_imageFile != null)
-            ? Image.file(
-                _imageFile,
-                fit: BoxFit.cover,
-              )
-            : Center(
-                child: Text('Sin Imagen'),
-              ),
-      ),
-    );
-  }
-
-  @override
-  void onImagePicked(File file) {
-    setState(() {
-      _imageFile = file;
-    });
-    widget.onImagePicked?.call(file);
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class RecipeCuisineSelectDialog extends StatefulWidget {
@@ -525,7 +474,14 @@ class RecipeCreateIngredientView extends StatelessWidget {
                 'Agregar',
                 style: TextStyle(fontFamily: 'ReemKufi'),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => IngredientSelectScreen(),
+                  ),
+                );
+              },
             )
           ],
         ),
