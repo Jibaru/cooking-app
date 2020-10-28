@@ -1,3 +1,4 @@
+import 'package:cooking_app/presentation/utils/router.dart';
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -55,33 +56,58 @@ class AppDrawer extends StatelessWidget {
                     RoutingTileDrawer(
                       title: 'Inicio',
                       iconData: Icons.home,
-                      onTap: () => (Scaffold.of(context) != null)
+                      onTap: () {
+                        if (Router.isCurrent(context, '/home')) {
+                          Navigator.pop(context);
+                        } else {
+                          Navigator.pushNamed(context, '/home');
+                        }
+                      },
+                      /*onTap: () => (Scaffold.of(context) != null)
                           ? Navigator.pop(context)
-                          : Navigator.pushNamed(context, '/home'),
+                          : Navigator.pushNamed(context, '/home'),*/
                     ),
                     RoutingTileDrawer(
                       title: 'Mis recetas',
                       iconData: Icons.book,
-                      // TODO: Redirect to MyRecipesScreen
-                      onTap: () {},
+                      onTap: () => Router.isCurrent(context, '/my-recipes')
+                          ? Navigator.pop(context)
+                          : Navigator.pushReplacementNamed(
+                              context,
+                              '/my-recipes',
+                            ),
                     ),
                     RoutingTileDrawer(
                       title: 'Favoritos',
                       iconData: Icons.favorite,
-                      // TODO: Redirect to FavoriteRecipesScreen
-                      onTap: () {},
+                      onTap: () =>
+                          Router.isCurrent(context, '/favorite-recipes')
+                              ? Navigator.pop(context)
+                              : Navigator.pushReplacementNamed(
+                                  context,
+                                  '/favorite-recipes',
+                                ),
                     ),
                     RoutingTileDrawer(
                       title: 'Guardados',
                       iconData: Icons.bookmark,
-                      // TODO: Redirect to StoreRecipesScreen
-                      onTap: () {},
+                      onTap: () => Router.isCurrent(context, '/stored-recipes')
+                          ? Navigator.pop(context)
+                          : Navigator.pushReplacementNamed(
+                              context,
+                              '/stored-recipes',
+                            ),
                     ),
                     RoutingTileDrawer(
                       title: 'Descargados',
                       iconData: Icons.archive,
-                      // TODO: Redirect to DownloadedRecipesScreen
-                      onTap: () {},
+                      onTap: () =>
+                          Router.isCurrent(context, '/downloaded-recipes')
+                              ? Navigator.pop(context)
+                              : Navigator.pushReplacementNamed(
+                                  context,
+                                  '/downloaded-recipes',
+                                ),
                     ),
                     RoutingTileDrawer(
                       title: 'Configuración',
