@@ -126,8 +126,11 @@ class _IngredientTileState extends State<IngredientTile>
                 height: 120.0,
                 child: Stack(
                   children: <Widget>[
-                    Image.network(
-                      'https://img.vixdata.io/pd/jpg-large/es/sites/default/files/imj/vivirsalud/B/Beneficios-del-tomate-un-super-alimento-4.jpg',
+                    FadeInImage(
+                      placeholder: AssetImage('assets/img/img_loader.gif'),
+                      image: NetworkImage(
+                        'https://img.vixdata.io/pd/jpg-large/es/sites/default/files/imj/vivirsalud/B/Beneficios-del-tomate-un-super-alimento-4.jpg',
+                      ),
                       width: 120.0,
                       height: 120.0,
                     ),
@@ -262,10 +265,6 @@ class _IngredientTileState extends State<IngredientTile>
                         ),
                       ],
                     ),
-                    /*IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {},
-                    ),*/
                   ],
                 ),
               ),
