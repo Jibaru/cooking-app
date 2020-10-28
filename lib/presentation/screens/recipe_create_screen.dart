@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
+import 'package:flutter/material.dart';
 
+import 'equipment/equipment_select_screen.dart';
+import 'ingredient/ingredient_select_screen.dart';
 import '../utils/custom_colors.dart';
 import '../widgets/widgets.dart';
-
-import 'ingredient/ingredient_select_screen.dart';
+import '../screens/step_create_screen.dart';
 
 class RecipeCreateScreen extends StatefulWidget {
   @override
@@ -26,6 +27,8 @@ class _RecipeCreateScreenState extends State<RecipeCreateScreen> {
   final FocusNode _recipeTypeFocusNode = FocusNode();
   final FocusNode _recipeCuisineFocusNode = FocusNode();
   final FocusNode _recipeDescriptionFocusNode = FocusNode();
+
+  final Set<String> _tags = <String>{};
 
   @override
   void dispose() {
@@ -180,36 +183,171 @@ class _RecipeCreateScreenState extends State<RecipeCreateScreen> {
                       'Agregar',
                       style: TextStyle(fontFamily: 'ReemKufi'),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => RecipeTagCreateDialog(
+                          initialTags: _tags,
+                          onTagAdded: (tagItem) {
+                            setState(() {
+                              _tags.add(tagItem);
+                            });
+                          },
+                          onTagDeleted: (tagItem) {
+                            setState(() {
+                              _tags.remove(tagItem);
+                            });
+                          },
+                        ),
+                      );
+                    },
                   )
                 ],
               ),
               Wrap(
                 spacing: 5,
                 runSpacing: -10,
-                children: List.generate(
-                  10,
-                  (i) => Chip(
-                    padding: EdgeInsets.zero,
-                    label: Text('Postre $i'),
-                    labelStyle: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'ReemKufi',
-                      fontSize: 15,
-                    ),
-                    deleteIcon: Icon(Icons.remove_circle),
-                    deleteIconColor: Colors.white,
-                    onDeleted: () {
-                      // TODO: Remove Tag from the list
-                    },
-                    backgroundColor: CustomColors.yellow,
-                  ),
-                ),
+                children: _tags
+                    .map(
+                      (tagItem) => Chip(
+                        padding: EdgeInsets.zero,
+                        label: Text('$tagItem'),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'ReemKufi',
+                          fontSize: 15,
+                        ),
+                        deleteIcon: Icon(Icons.close),
+                        deleteIconColor: Colors.white,
+                        onDeleted: () {
+                          // TODO: Remove Tag from the list
+                          setState(() {
+                            _tags.remove(tagItem);
+                          });
+                        },
+                        backgroundColor: CustomColors.yellow,
+                      ),
+                    )
+                    .toList()
+                    .cast<Widget>(),
               ),
             ],
           )
         ],
       ),
+    );
+  }
+}
+
+class RecipeTagCreateDialog extends StatefulWidget {
+  final Set<String> initialTags;
+  final void Function(String) onTagAdded;
+  final void Function(String) onTagDeleted;
+
+  const RecipeTagCreateDialog({
+    Key key,
+    this.initialTags,
+    this.onTagAdded,
+    this.onTagDeleted,
+  }) : super(key: key);
+
+  @override
+  _RecipeTagCreateDialogState createState() => _RecipeTagCreateDialogState();
+}
+
+class _RecipeTagCreateDialogState extends State<RecipeTagCreateDialog> {
+  final TextEditingController _nameTagTextEditingController =
+      TextEditingController();
+  final Set<String> _currentTags = <String>{};
+
+  @override
+  void initState() {
+    if (widget.initialTags != null) {
+      _currentTags.addAll(widget.initialTags);
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameTagTextEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      contentPadding: const EdgeInsets.all(20.0),
+      children: <Widget>[
+        Text(
+          'Tags',
+          style: TextStyle(
+            fontFamily: 'ReemKufi',
+            color: Colors.black54,
+            fontSize: 15,
+          ),
+        ),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: AppTextFormField(
+                controller: _nameTagTextEditingController,
+                labelText: 'Nombre del Tag',
+                prefixIconData: Icons.tag_faces,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                setState(() {
+                  _currentTags.add(_nameTagTextEditingController.text);
+                });
+                widget.onTagAdded?.call(_nameTagTextEditingController.text);
+              },
+            ),
+          ],
+        ),
+        Container(
+          height: 300.0,
+          margin: const EdgeInsets.only(top: 10.0),
+          width: double.maxFinite,
+          child: NotificationListener<OverscrollIndicatorNotification>(
+            onNotification: (overscroll) {
+              overscroll.disallowGlow();
+              return;
+            },
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 10.0,
+                children: _currentTags
+                    .toList()
+                    .reversed
+                    .map(
+                      (tagItem) => Chip(
+                        label: Text('$tagItem'),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'ReemKufi',
+                          fontSize: 15,
+                        ),
+                        deleteIcon: Icon(Icons.close),
+                        deleteIconColor: Colors.white,
+                        backgroundColor: CustomColors.yellow,
+                        onDeleted: () {
+                          setState(() {
+                            _currentTags.remove(tagItem);
+                          });
+                          widget.onTagDeleted?.call(tagItem);
+                        },
+                      ),
+                    )
+                    .toList()
+                    .cast<Widget>(),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -380,7 +518,14 @@ class RecipeCreateInstructionView extends StatelessWidget {
                 'Agregar',
                 style: TextStyle(fontFamily: 'ReemKufi'),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StepCreateScreen(),
+                  ),
+                );
+              },
             )
           ],
         ),
@@ -428,7 +573,14 @@ class RecipeCreateEquipmentView extends StatelessWidget {
                 'Agregar',
                 style: TextStyle(fontFamily: 'ReemKufi'),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EquipmentSelectScreen(),
+                  ),
+                );
+              },
             )
           ],
         ),
@@ -543,10 +695,57 @@ class IngredientOptionRow extends StatelessWidget {
               textColor: Colors.white,
               icon: Icon(Icons.edit),
               label: Text(
-                'Editar',
+                'Cant.',
                 style: TextStyle(fontFamily: 'ReemKufi'),
               ),
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Establezca la cantidad y unidades',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 18,
+                              fontFamily: 'ReemKufi',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              NaturalNumberSelectButton(
+                                initialNumber: 1,
+                                min: 1,
+                                max: 99,
+                                onChange: (value) {
+                                  // TODO: Change values
+                                },
+                              ),
+                              SizedBox(
+                                width: 120.0,
+                                child: ListSelectButton(
+                                  list: ['kg', 'gr', 'tazas'],
+                                  onChange: (value) {
+                                    // TODO: change values
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
             ),
             SizedBox(
               width: 5.0,
@@ -605,33 +804,15 @@ class EquipmentOptionRow extends StatelessWidget {
             ],
           ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FlatButton.icon(
-              color: CustomColors.yellow,
-              textColor: Colors.white,
-              icon: Icon(Icons.edit),
-              label: Text(
-                'Editar',
-                style: TextStyle(fontFamily: 'ReemKufi'),
-              ),
-              onPressed: () {},
-            ),
-            SizedBox(
-              width: 5.0,
-            ),
-            FlatButton.icon(
-              color: Colors.red,
-              textColor: Colors.white,
-              icon: Icon(Icons.delete_forever),
-              label: Text(
-                'Remover',
-                style: TextStyle(fontFamily: 'ReemKufi'),
-              ),
-              onPressed: () {},
-            ),
-          ],
+        FlatButton.icon(
+          color: Colors.red,
+          textColor: Colors.white,
+          icon: Icon(Icons.delete_forever),
+          label: Text(
+            'Remover',
+            style: TextStyle(fontFamily: 'ReemKufi'),
+          ),
+          onPressed: () {},
         ),
       ],
     );
