@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_text_form_field.dart';
-import 'natural_number_select_button.dart';
+import '../buttons/natural_number_select_button.dart';
 
 class AppNumberSelect extends StatefulWidget {
   final TextEditingController controller;

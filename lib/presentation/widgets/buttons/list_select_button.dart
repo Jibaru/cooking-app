@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/custom_colors.dart';
+import '../../utils/custom_colors.dart';
 
 class ListSelectButton<T> extends StatefulWidget {
   final List<T> list;

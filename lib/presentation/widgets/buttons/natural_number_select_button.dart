@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/custom_colors.dart';
+import '../../utils/custom_colors.dart';
 
 typedef void NaturalNumberSelectedCallback(int value);
 

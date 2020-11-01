@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../mixins/pick_image_mixin.dart';
+import '../../mixins/pick_image_mixin.dart';
 
 class AppImageViewSelect extends StatefulWidget {
   final void Function(File) onImagePicked;
