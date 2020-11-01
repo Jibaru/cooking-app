@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../screens/home_screen.dart';
-import '../screens/notification_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/recipe_create_screen.dart';
-import '../screens/setting_screen.dart';
-import '../screens/signin_screen.dart';
-import '../screens/login_screen.dart';
+import '../screens/application/notification_screen.dart';
+import '../screens/application/profile_screen.dart';
+import '../screens/recipe/recipe_create/recipe_create_screen.dart';
+import '../screens/application/setting_screen.dart';
+import '../screens/authentication/signin_screen.dart';
+import '../screens/authentication/login_screen.dart';
 import '../screens/recipe/favorite_recipes_screen.dart';
 import '../screens/recipe/my_recipes_screen.dart';
 import '../screens/recipe/stored_recipes_screen.dart';

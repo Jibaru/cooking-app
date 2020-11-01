@@ -3,10 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../mixins/pick_image_mixin.dart';
-import '../utils/custom_colors.dart';
-import '../utils/regex_validator.dart';
-import '../widgets/widgets.dart';
+import '../../mixins/pick_image_mixin.dart';
+import '../../utils/custom_colors.dart';
+import '../../utils/regex_validator.dart';
+import '../../widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
