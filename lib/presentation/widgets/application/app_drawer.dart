@@ -1,4 +1,4 @@
-import 'package:cooking_app/presentation/utils/router.dart';
+import 'package:cooking_app/presentation/utils/app_router.dart';
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -57,7 +57,7 @@ class AppDrawer extends StatelessWidget {
                       title: 'Inicio',
                       iconData: Icons.home,
                       onTap: () {
-                        if (Router.isCurrent(context, '/home')) {
+                        if (AppRouter.isCurrent(context, '/home')) {
                           Navigator.pop(context);
                         } else {
                           Navigator.pushNamed(context, '/home');
@@ -70,7 +70,7 @@ class AppDrawer extends StatelessWidget {
                     RoutingTileDrawer(
                       title: 'Mis recetas',
                       iconData: Icons.book,
-                      onTap: () => Router.isCurrent(context, '/my-recipes')
+                      onTap: () => AppRouter.isCurrent(context, '/my-recipes')
                           ? Navigator.pop(context)
                           : Navigator.pushReplacementNamed(
                               context,
@@ -81,7 +81,7 @@ class AppDrawer extends StatelessWidget {
                       title: 'Favoritos',
                       iconData: Icons.favorite,
                       onTap: () =>
-                          Router.isCurrent(context, '/favorite-recipes')
+                          AppRouter.isCurrent(context, '/favorite-recipes')
                               ? Navigator.pop(context)
                               : Navigator.pushReplacementNamed(
                                   context,
@@ -91,18 +91,19 @@ class AppDrawer extends StatelessWidget {
                     RoutingTileDrawer(
                       title: 'Guardados',
                       iconData: Icons.bookmark,
-                      onTap: () => Router.isCurrent(context, '/stored-recipes')
-                          ? Navigator.pop(context)
-                          : Navigator.pushReplacementNamed(
-                              context,
-                              '/stored-recipes',
-                            ),
+                      onTap: () =>
+                          AppRouter.isCurrent(context, '/stored-recipes')
+                              ? Navigator.pop(context)
+                              : Navigator.pushReplacementNamed(
+                                  context,
+                                  '/stored-recipes',
+                                ),
                     ),
                     RoutingTileDrawer(
                       title: 'Descargados',
                       iconData: Icons.archive,
                       onTap: () =>
-                          Router.isCurrent(context, '/downloaded-recipes')
+                          AppRouter.isCurrent(context, '/downloaded-recipes')
                               ? Navigator.pop(context)
                               : Navigator.pushReplacementNamed(
                                   context,

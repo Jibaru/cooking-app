@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utils/custom_colors.dart';
-import '../utils/router.dart';
+import '../utils/app_router.dart';
 import '../widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,10 +27,10 @@ class HomeScreen extends StatelessWidget {
             onSelected: (value) => Navigator.pushNamed(context, value),
             offset: Offset(10.0, 5.0),
             itemBuilder: (context) {
-              return Router.routesNamed.keys
+              return AppRouter.routesNamed.keys
                   .map((key) => PopupMenuItem<String>(
                         value: key,
-                        child: Text(Router.routesNamed[key]),
+                        child: Text(AppRouter.routesNamed[key]),
                       ))
                   .toList();
             },
