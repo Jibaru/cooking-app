@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:cooking_app/presentation/app.dart';
+import './presentation/app.dart';
 
-void main() {
+void main() async {
+  await DotEnv().load('.env');
   runApp(App());
 }
