@@ -15,11 +15,16 @@ import '../screens/recipe/downloaded_recipes_screen.dart';
 typedef RouteFactory = Route<dynamic> Function(RouteSettings settings);
 
 abstract class AppRouter {
-  static final Map<String, String> routesNamed = {
+  static final Map<String, String> routesNamedLoggedOut = {
     '/login': 'Iniciar Sesión',
     '/setting': 'Configuración',
+  };
+
+  static final Map<String, String> routesNamedLoggedIn = {
     '/profile': 'Perfil',
     '/notification': 'Notificaciones',
+    '/setting': 'Configuración',
+    '/logout': 'Cerrar Sesión',
   };
 
   static final Map<String, WidgetBuilder> routes = {
