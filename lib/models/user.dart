@@ -27,6 +27,8 @@ class User extends Equatable {
   @override
   bool get stringify => true;
 
+  String get fullName => firstName + ' ' + lastName;
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -34,7 +36,7 @@ class User extends Equatable {
       'lastName': lastName,
       'nickName': nickName,
       'email': email,
-      'image': image,
+      'profileImage': image.toMap(),
     };
   }
 
