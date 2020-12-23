@@ -1,31 +1,36 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+
+import '../presentation/utils/base64_parser.dart';
 
 class Image extends Equatable {
   final int id;
   final String name;
   final String mimeType;
-  final File file;
+  final String base64;
 
   const Image({
     @required this.id,
     @required this.name,
     @required this.mimeType,
-    @required this.file,
+    @required this.base64,
   });
 
   @override
-  List<Object> get props => [id, name, mimeType, base64Url];
+  List<Object> get props => [id, name, mimeType, base64];
+
+  Uint8List get uint8listBase64 => base64ToUint8List(this.base64);
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'mimeType': mimeType,
-      'base64': _fileToBase64(file),
+      'base64': base64,
     };
   }
 
@@ -36,9 +41,7 @@ class Image extends Equatable {
       id: map['id'],
       name: map['name'],
       mimeType: map['mimeType'],
-      file: map['base64'] != null
-          ? _base64ToFile(map['name'], map['base64'])
-          : null,
+      base64: map['base64'],
     );
   }
 
@@ -49,25 +52,11 @@ class Image extends Equatable {
       id: null,
       name: file.path.split('/').last,
       mimeType: file.path.split('.').last,
-      file: file,
+      base64: fileToBase64(file),
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory Image.fromJson(String source) => Image.fromMap(json.decode(source));
-
-  static File _base64ToFile(String name, String source) {
-    final decodedBytes = base64Decode(source);
-    var file = File(name);
-    file.writeAsBytesSync(decodedBytes);
-
-    return file;
-  }
-
-  static String _fileToBase64(File file) {
-    final bytes = file.readAsBytesSync();
-    String img64 = base64Encode(bytes);
-    return img64;
-  }
 }
