@@ -36,7 +36,7 @@ class User extends Equatable {
       'lastName': lastName,
       'nickName': nickName,
       'email': email,
-      'profileImage': image.toMap(),
+      'profileImage': image?.toMap(),
     };
   }
 
@@ -56,4 +56,22 @@ class User extends Equatable {
   String toJson() => json.encode(toMap());
 
   factory User.fromJson(String source) => User.fromMap(json.decode(source));
+
+  User copyWith({
+    int id,
+    String firstName,
+    String lastName,
+    String nickName,
+    String email,
+    Image image,
+  }) {
+    return User(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      nickName: nickName ?? this.nickName,
+      email: email ?? this.email,
+      image: image ?? this.image,
+    );
+  }
 }
