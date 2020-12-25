@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../blocs/authentication/authentication_bloc.dart';
+import '../../../blocs/user/user_bloc.dart';
 import '../../utils/custom_colors.dart';
 import '../../utils/regex_validator.dart';
 import '../../widgets/widgets.dart';
@@ -46,144 +49,156 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: SizedBox(
                     width: double.infinity,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            width: 180,
-                            height: 180,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  // TODO: Change to app Logo
-                                  image: NetworkImage(
-                                      'https://dummyimage.com/250/b5b5b5/fff'),
+                    child: BlocListener<AuthenticationBloc, AuthenticationState>(
+                      listener: (context, state) {
+                        if (state is AuthenticationLoginFailure) {
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.black,
+                              content: Text(state.message),
+                              duration: Duration(milliseconds: 1000),
+                            ),
+                          );
+                        } else if (state is AuthenticationLoginSuccess) {
+                          BlocProvider.of<UserBloc>(context).add(UserLogIn());
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
+                      },
+                      child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                        builder: (context, state) {
+                          return SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Container(
+                                  width: 180,
+                                  height: 180,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        // TODO: Change to app Logo
+                                        image: NetworkImage(
+                                            'https://dummyimage.com/250/b5b5b5/fff'),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          // TODO: Delete this? ?
-                          Text('App de Recetas :v'),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: 250.0,
-                              maxWidth: 350.0,
-                            ),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: Form(
-                                key: _formKey,
-                                onChanged: () {
-                                  if (_hasBeenValidated)
-                                    _formKey.currentState.validate();
-                                },
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    AppTextFormField(
-                                      controller: _emailTextEditingController,
-                                      focusNode: _emailFocusNode,
-                                      labelText: 'Correo Electrónico',
-                                      prefixIconData: Icons.email,
-                                      keyboardType: TextInputType.emailAddress,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (email) {
-                                        if (email.isEmpty) {
-                                          return 'Por favor ingrese un email';
-                                        } else if (RegexValidation
-                                            .isInvalidEmail(email)) {
-                                          return 'Correo electrónico inválido';
-                                        }
-                                        return null;
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: 250.0,
+                                    maxWidth: 350.0,
+                                  ),
+                                  child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Form(
+                                      key: _formKey,
+                                      onChanged: () {
+                                        if (_hasBeenValidated)
+                                          _formKey.currentState.validate();
                                       },
-                                      onEditingComplete: () =>
-                                          _passwordFocusNode.requestFocus(),
-                                    ),
-                                    AppTextFormField(
-                                      controller:
-                                          _passwordTextEditingController,
-                                      focusNode: _passwordFocusNode,
-                                      labelText: 'Contraseña',
-                                      obscureText: true,
-                                      prefixIconData: Icons.lock,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      textInputAction: TextInputAction.done,
-                                      validator: (password) {
-                                        if (password.isEmpty) {
-                                          return 'Por favor ingrese una contraseña';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          FocusScope.of(context)
-                                              .requestFocus(_screenFocusNode),
-                                    ),
-                                    Wrap(
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      alignment: WrapAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          'Mantener sesión guardada',
-                                          overflow: TextOverflow.visible,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: Colors.black26,
-                                            fontFamily: 'ReemKufi',
-                                            fontSize: 14,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          AppTextFormField(
+                                            controller:
+                                                _emailTextEditingController,
+                                            focusNode: _emailFocusNode,
+                                            labelText: 'Correo Electrónico',
+                                            prefixIconData: Icons.email,
+                                            keyboardType:
+                                                TextInputType.emailAddress,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            validator: (email) {
+                                              if (email.isEmpty) {
+                                                return 'Por favor ingrese un email';
+                                              } else if (RegexValidation
+                                                  .isInvalidEmail(email)) {
+                                                return 'Correo electrónico inválido';
+                                              }
+                                              return null;
+                                            },
+                                            onEditingComplete: () =>
+                                                _passwordFocusNode
+                                                    .requestFocus(),
                                           ),
-                                        ),
-                                        Switch.adaptive(
-                                          value: _keepLoggedIn,
-                                          activeColor: CustomColors.blue,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _keepLoggedIn = value;
-                                            });
-                                          },
-                                        ),
-                                      ],
+                                          AppTextFormField(
+                                            controller:
+                                                _passwordTextEditingController,
+                                            focusNode: _passwordFocusNode,
+                                            labelText: 'Contraseña',
+                                            obscureText: true,
+                                            prefixIconData: Icons.lock,
+                                            keyboardType:
+                                                TextInputType.visiblePassword,
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            validator: (password) {
+                                              if (password.isEmpty) {
+                                                return 'Por favor ingrese una contraseña';
+                                              }
+                                              return null;
+                                            },
+                                            onEditingComplete: () =>
+                                                FocusScope.of(context)
+                                                    .requestFocus(
+                                                        _screenFocusNode),
+                                          ),
+                                          Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            alignment: WrapAlignment.center,
+                                            children: <Widget>[
+                                              Text(
+                                                'Mantener sesión guardada',
+                                                overflow: TextOverflow.visible,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.black26,
+                                                  fontFamily: 'ReemKufi',
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              Switch.adaptive(
+                                                value: _keepLoggedIn,
+                                                activeColor: CustomColors.blue,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _keepLoggedIn = value;
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                                Hero(
+                                  tag: 'app-in-button-tag',
+                                  child: _buildLoginAction(context, state),
+                                ),
+                                AppAuthHyperlink(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    questionText: '¿No tienes una cuenta?',
+                                    hyperlinkText: 'Regístrate',
+                                    onTapHyperlink: () =>
+                                        Navigator.pushReplacementNamed(
+                                            context, '/signin')
+                                    ),
+                                AppCoFotter(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10.0,
+                                    top: 30.0,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Hero(
-                            tag: 'app-in-button-tag',
-                            child: AppRaisedButton(
-                              text: 'Iniciar Sesión',
-                              onPressed: () {
-                                if (!_screenFocusNode.hasFocus)
-                                  FocusScope.of(context)
-                                      .requestFocus(_screenFocusNode);
-                                if (!_hasBeenValidated)
-                                  _hasBeenValidated = true;
-                                if (_formKey.currentState.validate()) {
-                                  // TODO: Form Validated, call a login service
-                                }
-                              },
-                            ),
-                          ),
-                          AppAuthHyperlink(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              questionText: '¿No tienes una cuenta?',
-                              hyperlinkText: 'Regístrate',
-                              onTapHyperlink: () =>
-                                  Navigator.pushReplacementNamed(
-                                      context, '/signin')
-                              //Router.pushVoid(context, '/signin'),
-                              ),
-                          AppCoFotter(
-                            padding: const EdgeInsets.only(
-                              bottom: 10.0,
-                              top: 30.0,
-                            ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -204,6 +219,29 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLoginAction(BuildContext context, AuthenticationState state) {
+    if (state is AuthenticationLoginLoading) {
+      return CircularProgressIndicator();
+    }
+    return AppRaisedButton(
+      text: 'Iniciar Sesión',
+      onPressed: () {
+        if (!_screenFocusNode.hasFocus)
+          FocusScope.of(context).requestFocus(_screenFocusNode);
+        if (!_hasBeenValidated) _hasBeenValidated = true;
+        if (_formKey.currentState.validate()) {
+          BlocProvider.of<AuthenticationBloc>(context).add(
+            AuthenticationLoginSubmitted(
+              email: _emailTextEditingController.text,
+              password: _passwordTextEditingController.text,
+              keepLogged: _keepLoggedIn,
+            ),
+          );
+        }
+      },
     );
   }
 }
