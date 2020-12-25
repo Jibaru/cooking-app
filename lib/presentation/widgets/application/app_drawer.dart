@@ -1,7 +1,15 @@
-import 'package:cooking_app/presentation/utils/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AppDrawer extends StatelessWidget {
+import '../../../blocs/user/user_bloc.dart';
+import '../../../presentation/utils/app_router.dart';
+
+class AppDrawer extends StatefulWidget {
+  @override
+  _AppDrawerState createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -21,28 +29,74 @@ class AppDrawer extends StatelessWidget {
                   )
                 ],
               ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.black26,
-                    foregroundColor: Colors.black54,
-                    radius: 45,
-                    child: Icon(
-                      Icons.person,
-                      size: 30,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.pushNamed(context, '/login'),
-                    child: Text(
-                      'Ingresar',
-                      style: TextStyle(fontSize: 18, fontFamily: 'ReemKufi'),
-                    ),
-                  )
-                ],
+              child: BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  if (state is UserLoaded) {
+                    return GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/profile'),
+                      child: Column(
+                        children: [
+                          if (state.user.image != null)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: SizedBox(
+                                  width: 100,
+                                  height: 100,
+                                  child: Image.memory(
+                                    state.user?.image?.uint8listBase64,
+                                    fit: BoxFit.cover,
+                                  )),
+                            ),
+                          if (state.user.image == null)
+                            CircleAvatar(
+                              backgroundColor: Colors.black26,
+                              foregroundColor: Colors.black54,
+                              radius: 45,
+                              child: Icon(
+                                Icons.person,
+                                size: 30,
+                              ),
+                            ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            state.user.fullName,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 15, fontFamily: 'ReemKufi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.black26,
+                        foregroundColor: Colors.black54,
+                        radius: 45,
+                        child: Icon(
+                          Icons.person,
+                          size: 30,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      InkWell(
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                        child: Text(
+                          'Ingresar',
+                          style:
+                              TextStyle(fontSize: 18, fontFamily: 'ReemKufi'),
+                        ),
+                      )
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -52,7 +106,7 @@ class AppDrawer extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: <RoutingTileDrawer>[
+                  children: <Widget>[
                     RoutingTileDrawer(
                       title: 'Inicio',
                       iconData: Icons.home,
@@ -67,37 +121,58 @@ class AppDrawer extends StatelessWidget {
                           ? Navigator.pop(context)
                           : Navigator.pushNamed(context, '/home'),*/
                     ),
-                    RoutingTileDrawer(
-                      title: 'Mis recetas',
-                      iconData: Icons.book,
-                      onTap: () => AppRouter.isCurrent(context, '/my-recipes')
-                          ? Navigator.pop(context)
-                          : Navigator.pushReplacementNamed(
-                              context,
-                              '/my-recipes',
-                            ),
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        return Visibility(
+                          visible: state is UserLoaded,
+                          child: RoutingTileDrawer(
+                            title: 'Mis recetas',
+                            iconData: Icons.book,
+                            onTap: () => AppRouter.isCurrent(context, '/my-recipes')
+                                ? Navigator.pop(context)
+                                : Navigator.pushReplacementNamed(
+                                    context,
+                                    '/my-recipes',
+                                  ),
+                          ),
+                        );
+                      },
                     ),
-                    RoutingTileDrawer(
-                      title: 'Favoritos',
-                      iconData: Icons.favorite,
-                      onTap: () =>
-                          AppRouter.isCurrent(context, '/favorite-recipes')
-                              ? Navigator.pop(context)
-                              : Navigator.pushReplacementNamed(
-                                  context,
-                                  '/favorite-recipes',
-                                ),
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        return Visibility(
+                          visible: state is UserLoaded,
+                          child: RoutingTileDrawer(
+                            title: 'Favoritos',
+                            iconData: Icons.favorite,
+                            onTap: () =>
+                                AppRouter.isCurrent(context, '/favorite-recipes')
+                                    ? Navigator.pop(context)
+                                    : Navigator.pushReplacementNamed(
+                                        context,
+                                        '/favorite-recipes',
+                                      ),
+                          ),
+                        );
+                      },
                     ),
-                    RoutingTileDrawer(
-                      title: 'Guardados',
-                      iconData: Icons.bookmark,
-                      onTap: () =>
-                          AppRouter.isCurrent(context, '/stored-recipes')
-                              ? Navigator.pop(context)
-                              : Navigator.pushReplacementNamed(
-                                  context,
-                                  '/stored-recipes',
-                                ),
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        return Visibility(
+                          visible: state is UserLoaded,
+                          child: RoutingTileDrawer(
+                            title: 'Guardados',
+                            iconData: Icons.bookmark,
+                            onTap: () =>
+                                AppRouter.isCurrent(context, '/stored-recipes')
+                                    ? Navigator.pop(context)
+                                    : Navigator.pushReplacementNamed(
+                                        context,
+                                        '/stored-recipes',
+                                      ),
+                          ),
+                        );
+                      },
                     ),
                     RoutingTileDrawer(
                       title: 'Descargados',
@@ -114,6 +189,21 @@ class AppDrawer extends StatelessWidget {
                       title: 'Configuración',
                       iconData: Icons.settings,
                       onTap: () => Navigator.pushNamed(context, '/setting'),
+                    ),
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        return Visibility(
+                          visible: state is UserLoaded,
+                          child: RoutingTileDrawer(
+                            title: 'Cerrar sesión',
+                            iconData: Icons.logout,
+                            onTap: () {
+                              BlocProvider.of<UserBloc>(context)
+                                  .add(UserLogOut());
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
