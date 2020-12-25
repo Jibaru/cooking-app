@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocs/user/user_bloc.dart';
 import '../utils/custom_colors.dart';
 import '../utils/app_router.dart';
 import '../widgets/widgets.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _homeScreenScaffoldKey = GlobalKey();
 
   @override
@@ -23,18 +30,35 @@ class HomeScreen extends StatelessWidget {
             // TODO: Add function to search recipe
             onPressed: () => {},
           ),
-          PopupMenuButton(
-            onSelected: (value) => Navigator.pushNamed(context, value),
-            offset: Offset(10.0, 5.0),
-            itemBuilder: (context) {
-              return AppRouter.routesNamed.keys
-                  .map((key) => PopupMenuItem<String>(
-                        value: key,
-                        child: Text(AppRouter.routesNamed[key]),
-                      ))
-                  .toList();
+          BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              return PopupMenuButton(
+                onSelected: (value) {
+                  if (value == '/logout') {
+                    BlocProvider.of<UserBloc>(context).add(UserLogOut());
+                  } else {
+                    Navigator.pushNamed(context, value);
+                  }
+                },
+                offset: Offset(10.0, 5.0),
+                itemBuilder: (context) {
+                  Map<String, String> routes = <String, String>{};
+                  if (state is UserEmpty) {
+                    routes.addAll(AppRouter.routesNamedLoggedOut);
+                  } else if (state is UserLoaded) {
+                    routes.addAll(AppRouter.routesNamedLoggedIn);
+                  }
+
+                  return routes.keys
+                      .map((key) => PopupMenuItem<String>(
+                            value: key,
+                            child: Text(routes[key]),
+                          ))
+                      .toList();
+                },
+              );
             },
-          )
+          ),
         ],
       ),
       drawer: AppDrawer(),
