@@ -1,8 +1,11 @@
 import 'dart:io';
-import 'dart:ui';
+import 'dart:typed_data' show Uint8List;
 
+import 'package:cooking_app/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../blocs/user/user_bloc.dart';
 import '../../mixins/pick_image_mixin.dart';
 import '../../utils/custom_colors.dart';
 import '../../utils/regex_validator.dart';
@@ -17,10 +20,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FocusNode _screenFocusNode = FocusNode();
   final FocusNode _firstNameFocusNode = FocusNode();
   final FocusNode _lastNameFocusNode = FocusNode();
+  final FocusNode _nickNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _firstNameTextEditingController =
       TextEditingController();
   final TextEditingController _lastNameTextEditingController =
+      TextEditingController();
+  final TextEditingController _nickNameTextEditingController =
       TextEditingController();
   final TextEditingController _emailTextEditingController =
       TextEditingController();
@@ -29,10 +35,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    // TODO: change to the current logged in user data
-    _firstNameTextEditingController.text = 'Ignacio Raúl';
-    _lastNameTextEditingController.text = 'Rueda Boada';
-    _emailTextEditingController.text = 'ignacioruedaboada@gmail.com';
+    if (BlocProvider.of<UserBloc>(context).state is UserLoaded) {
+      final UserLoaded state =
+          BlocProvider.of<UserBloc>(context).state as UserLoaded;
+
+      _firstNameTextEditingController.text = state.user.firstName;
+      _lastNameTextEditingController.text = state.user.lastName;
+      _nickNameTextEditingController.text = state.user.nickName;
+      _emailTextEditingController.text = state.user.email;
+    }
     super.initState();
   }
 
@@ -40,10 +51,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _firstNameFocusNode.dispose();
     _lastNameFocusNode.dispose();
+    _nickNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _screenFocusNode.dispose();
     _firstNameTextEditingController.dispose();
     _lastNameTextEditingController.dispose();
+    _nickNameTextEditingController.dispose();
     _emailTextEditingController.dispose();
     super.dispose();
   }
@@ -57,183 +70,282 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: double.maxFinite,
           color: Colors.white,
           child: SafeArea(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Container(
-                    constraints: BoxConstraints(maxHeight: 350.0),
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 1.5,
-                          spreadRadius: 1.5,
-                          offset: Offset(0.0, 1.0),
-                        ),
-                      ],
+            child: BlocListener<UserBloc, UserState>(
+              listener: (context, state) {
+                if (state is UserUpdateSuccess) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.black,
+                      content: Text(state.message),
+                      duration: Duration(milliseconds: 1000),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.black38,
+                  );
+                  BlocProvider.of<UserBloc>(context).add(UserLogIn());
+                }
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxHeight: 350.0),
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 1.5,
+                            spreadRadius: 1.5,
+                            offset: Offset(0.0, 1.0),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.black38,
+                              ),
+                              onPressed: () => Navigator.pop(context),
                             ),
-                            onPressed: () => Navigator.pop(context),
                           ),
-                        ),
-                        UserAvatar(
-                          size: 150.0,
-                          urlImage:
-                              'https://assets.nacionrex.com/__export/1582590075513/sites/debate/img/2020/02/24/69ec52ac01bd9e7c316b91bd4c3aa2ed_crop1582590058186.jpg_1577178466.jpg',
-                        ),
-                        Text(
-                          'Andres Calamaro Rodriguez',
-                          maxLines: 2,
-                          overflow: TextOverflow.visible,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontFamily: 'ReemKufi',
-                            fontSize: 17,
+                          BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              if (state is UserLoaded) {
+                                return UserAvatar.fromUint8List(
+                                  size: 150.0,
+                                  uint8List: state.user?.image?.uint8listBase64,
+                                );
+                              }
+
+                              return UserAvatar.empty(size: 150.0);
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child:
-                        NotificationListener<OverscrollIndicatorNotification>(
-                      onNotification:
-                          (OverscrollIndicatorNotification overscroll) {
-                        overscroll.disallowGlow();
-                        return;
-                      },
-                      child: SingleChildScrollView(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 10.0,
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 180.0,
-                            maxWidth: 320.0,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Form(
-                                // FIXME: Detect if a new input is equals to old value
-                                onChanged: () =>
-                                    setState(() => _formHasChanged = true),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    AppTextFormField(
-                                      controller:
-                                          _firstNameTextEditingController,
-                                      focusNode: _firstNameFocusNode,
-                                      labelText: 'Nombres',
-                                      prefixIconData: Icons.person,
-                                      keyboardType: TextInputType.name,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (firstName) {
-                                        if (firstName.isEmpty) {
-                                          return 'Por favor ingrese un nombre';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          _lastNameFocusNode.requestFocus(),
-                                    ),
-                                    AppTextFormField(
-                                      controller:
-                                          _lastNameTextEditingController,
-                                      focusNode: _lastNameFocusNode,
-                                      labelText: 'Apellidos',
-                                      prefixIconData: Icons.text_fields,
-                                      keyboardType: TextInputType.name,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (lastName) {
-                                        if (lastName.isEmpty) {
-                                          return 'Por favor ingrese un apellido';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          _emailFocusNode.requestFocus(),
-                                    ),
-                                    AppTextFormField(
-                                      controller: _emailTextEditingController,
-                                      focusNode: _emailFocusNode,
-                                      labelText: 'Correo Electrónico',
-                                      prefixIconData: Icons.email,
-                                      keyboardType: TextInputType.emailAddress,
-                                      textInputAction: TextInputAction.done,
-                                      validator: (email) {
-                                        if (email.isEmpty) {
-                                          return 'Por favor ingrese un email';
-                                        } else if (RegexValidation
-                                            .isInvalidEmail(email)) {
-                                          return 'Correo electrónico inválido';
-                                        }
-                                        return null;
-                                      },
-                                      onEditingComplete: () =>
-                                          FocusScope.of(context)
-                                              .requestFocus(_screenFocusNode),
-                                    ),
-                                    SizedBox(
-                                      height: 15.0,
-                                    ),
-                                    AppRaisedButton(
-                                      text: 'Guardar',
-                                      onPressed: _formHasChanged
-                                          ? () {
-                                              // TODO: Change data with service
-                                            }
-                                          : null,
-                                    ),
-                                  ],
+                          BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              return Text(
+                                (() {
+                                  if (state is UserLoaded) {
+                                    return state.user.fullName;
+                                  } else if (state is UserUpdateSuccess) {
+                                    return state.user.fullName;
+                                  }
+
+                                  return 'Usuario no cargado';
+                                })(),
+                                maxLines: 2,
+                                overflow: TextOverflow.visible,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontFamily: 'ReemKufi',
+                                  fontSize: 17,
                                 ),
-                              ),
-                              Divider(
-                                color: Colors.black26,
-                                height: 40.0,
-                              ),
-                              ProfileOption(
-                                title: 'Cambiar Contraseña',
-                                iconData: Icons.lock,
-                                // TODO: Handle modal to change password
-                                onTap: () {},
-                              ),
-                              ProfileOption(
-                                title: 'Mis Recetas',
-                                iconData: Icons.library_books,
-                                // TODO: Redirect to MyRecipes Screen
-                                onTap: () {},
-                              ),
-                            ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child:
+                          NotificationListener<OverscrollIndicatorNotification>(
+                        onNotification:
+                            (OverscrollIndicatorNotification overscroll) {
+                          overscroll.disallowGlow();
+                          return;
+                        },
+                        child: SingleChildScrollView(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                              vertical: 10.0,
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 180.0,
+                              maxWidth: 320.0,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Form(
+                                  onChanged: () => _onChangedForm(context),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      AppTextFormField(
+                                        controller:
+                                            _firstNameTextEditingController,
+                                        focusNode: _firstNameFocusNode,
+                                        labelText: 'Nombres',
+                                        prefixIconData: Icons.person,
+                                        keyboardType: TextInputType.name,
+                                        textInputAction: TextInputAction.next,
+                                        validator: (firstName) {
+                                          if (firstName.isEmpty) {
+                                            return 'Por favor ingrese un nombre';
+                                          }
+                                          return null;
+                                        },
+                                        onEditingComplete: () =>
+                                            _lastNameFocusNode.requestFocus(),
+                                      ),
+                                      AppTextFormField(
+                                        controller:
+                                            _lastNameTextEditingController,
+                                        focusNode: _lastNameFocusNode,
+                                        labelText: 'Apellidos',
+                                        prefixIconData: Icons.text_fields,
+                                        keyboardType: TextInputType.name,
+                                        textInputAction: TextInputAction.next,
+                                        validator: (lastName) {
+                                          if (lastName.isEmpty) {
+                                            return 'Por favor ingrese un apellido';
+                                          }
+                                          return null;
+                                        },
+                                        onEditingComplete: () =>
+                                            _nickNameFocusNode.requestFocus(),
+                                      ),
+                                      AppTextFormField(
+                                        controller:
+                                            _nickNameTextEditingController,
+                                        focusNode: _nickNameFocusNode,
+                                        labelText: 'Nickname',
+                                        prefixIconData: Icons.person_outline,
+                                        keyboardType: TextInputType.name,
+                                        textInputAction: TextInputAction.next,
+                                        validator: (nickName) {
+                                          if (nickName.isEmpty) {
+                                            return 'Por favor ingrese un nickname';
+                                          }
+                                          return null;
+                                        },
+                                        onEditingComplete: () =>
+                                            _emailFocusNode.requestFocus(),
+                                      ),
+                                      AppTextFormField(
+                                        controller: _emailTextEditingController,
+                                        focusNode: _emailFocusNode,
+                                        labelText: 'Correo Electrónico',
+                                        prefixIconData: Icons.email,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        textInputAction: TextInputAction.done,
+                                        validator: (email) {
+                                          if (email.isEmpty) {
+                                            return 'Por favor ingrese un email';
+                                          } else if (RegexValidation
+                                              .isInvalidEmail(email)) {
+                                            return 'Correo electrónico inválido';
+                                          }
+                                          return null;
+                                        },
+                                        onEditingComplete: () =>
+                                            FocusScope.of(context)
+                                                .requestFocus(_screenFocusNode),
+                                      ),
+                                      SizedBox(
+                                        height: 15.0,
+                                      ),
+                                      BlocBuilder<UserBloc, UserState>(
+                                        builder: (context, state) {
+                                          if (state is UserUpdateLoading) {
+                                            return CircularProgressIndicator();
+                                          }
+
+                                          return AppRaisedButton(
+                                            text: 'Guardar',
+                                            onPressed: _formHasChanged
+                                                ? () =>
+                                                    _updateUser(context, state)
+                                                : null,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Divider(
+                                  color: Colors.black26,
+                                  height: 40.0,
+                                ),
+                                ProfileOption(
+                                  title: 'Cambiar Contraseña',
+                                  iconData: Icons.lock,
+                                  // TODO: Handle modal to change password
+                                  onTap: () {},
+                                ),
+                                ProfileOption(
+                                  title: 'Mis Recetas',
+                                  iconData: Icons.library_books,
+                                  // TODO: Redirect to MyRecipes Screen
+                                  onTap: () {},
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _onChangedForm(BuildContext context) {
+    final user = (BlocProvider.of<UserBloc>(context).state as UserLoaded).user;
+
+    if (_firstNameTextEditingController.text.trim() != user.firstName ||
+        _lastNameTextEditingController.text.trim() != user.lastName ||
+        _emailTextEditingController.text.trim() != user.email || 
+        _nickNameTextEditingController.text.trim() != user.nickName)
+      setState(() {
+        _formHasChanged = true;
+      });
+    else
+      setState(() {
+        _formHasChanged = false;
+      });
+  }
+
+  void _updateUser(BuildContext context, UserState state) {
+    if (state is UserLoaded) {
+      final User user = state.user;
+      final Map<String, String> fields = {};
+
+      if (_firstNameTextEditingController.text != user.firstName)
+        fields["firstName"] = _firstNameTextEditingController.text;
+
+      if (_lastNameTextEditingController.text != user.lastName)
+        fields["lastName"] = _lastNameTextEditingController.text;
+
+      if (_nickNameTextEditingController.text != user.nickName)
+        fields["nickName"] = _nickNameTextEditingController.text;
+
+      if (_emailTextEditingController.text != user.email)
+        fields["email"] = _emailTextEditingController.text;
+
+      if (fields.isNotEmpty) {
+        BlocProvider.of<UserBloc>(context).add(
+          UserUpdated(
+            fields: fields,
+          ),
+        );
+      }
+    }
   }
 }
 
@@ -276,17 +388,19 @@ class ProfileOption extends StatelessWidget {
 /// update an image from user and display changes applied
 class UserAvatar extends StatefulWidget {
   final double size;
-  final String urlImage;
-  final File fileImage;
+  final Uint8List fileInt8List;
 
-  UserAvatar({
+  UserAvatar.fromUint8List({
     Key key,
     @required this.size,
-    this.urlImage,
-    this.fileImage,
-  })  : assert(size >= 100.0),
-        assert((urlImage != null && fileImage == null) ||
-            (urlImage == null && fileImage != null)),
+    @required Uint8List uint8List,
+  })  : fileInt8List = uint8List,
+        assert(size >= 100.0),
+        super(key: key);
+
+  UserAvatar.empty({Key key, @required this.size})
+      : fileInt8List = null,
+        assert(size >= 100.0),
         super(key: key);
 
   @override
@@ -294,12 +408,11 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
-  File _pickedFile;
+  Uint8List _uint8list;
 
   @override
   void initState() {
-    // FIXME: Reference to a final instance of file
-    if (widget.fileImage != null) _pickedFile = widget.fileImage;
+    _uint8list = widget.fileInt8List;
     super.initState();
   }
 
@@ -323,7 +436,7 @@ class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
               //image: _getImage(),
             ),
             alignment: Alignment.center,
-            child: (_pickedFile == null && widget.urlImage == null)
+            child: (_uint8list == null)
                 ? Text(
                     'Sin imagen',
                     textScaleFactor: 1.0,
@@ -336,7 +449,14 @@ class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
                   )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(widget.size / 2),
-                    child: _getImage(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: MemoryImage(_uint8list),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
           ),
           Align(
@@ -360,31 +480,10 @@ class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
     );
   }
 
-  Widget _getImage() {
-    // On first load widget
-    if (widget.urlImage != null && _pickedFile == null) {
-      return FadeInImage.assetNetwork(
-        placeholder: 'assets/img/img_loader.gif',
-        placeholderScale: 0.5,
-        image: widget.urlImage,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: FileImage(_pickedFile),
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
-    }
-  }
-
   @override
   void onImagePicked(File file) {
     setState(() {
-      _pickedFile = File(file.path);
+      _uint8list = file.readAsBytesSync();
     });
   }
 }
