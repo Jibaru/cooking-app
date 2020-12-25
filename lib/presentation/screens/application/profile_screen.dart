@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data' show Uint8List;
 
-import 'package:cooking_app/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../blocs/user/user_bloc.dart';
+import '../../../models/user.dart';
 import '../../mixins/pick_image_mixin.dart';
 import '../../utils/custom_colors.dart';
 import '../../utils/regex_validator.dart';
@@ -116,17 +115,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () => Navigator.pop(context),
                             ),
                           ),
-                          BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              if (state is UserLoaded) {
-                                return UserAvatar.fromUint8List(
-                                  size: 150.0,
-                                  uint8List: state.user?.image?.uint8listBase64,
-                                );
-                              }
-
-                              return UserAvatar.empty(size: 150.0);
-                            },
+                          UserAvatar(
+                            size: 150.0,
                           ),
                           BlocBuilder<UserBloc, UserState>(
                             builder: (context, state) {
@@ -310,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_firstNameTextEditingController.text.trim() != user.firstName ||
         _lastNameTextEditingController.text.trim() != user.lastName ||
-        _emailTextEditingController.text.trim() != user.email || 
+        _emailTextEditingController.text.trim() != user.email ||
         _nickNameTextEditingController.text.trim() != user.nickName)
       setState(() {
         _formHasChanged = true;
@@ -388,19 +378,11 @@ class ProfileOption extends StatelessWidget {
 /// update an image from user and display changes applied
 class UserAvatar extends StatefulWidget {
   final double size;
-  final Uint8List fileInt8List;
 
-  UserAvatar.fromUint8List({
+  UserAvatar({
     Key key,
     @required this.size,
-    @required Uint8List uint8List,
-  })  : fileInt8List = uint8List,
-        assert(size >= 100.0),
-        super(key: key);
-
-  UserAvatar.empty({Key key, @required this.size})
-      : fileInt8List = null,
-        assert(size >= 100.0),
+  })  : assert(size >= 100.0),
         super(key: key);
 
   @override
@@ -408,14 +390,6 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
-  Uint8List _uint8list;
-
-  @override
-  void initState() {
-    _uint8list = widget.fileInt8List;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -433,45 +407,64 @@ class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
                 color: Colors.black12,
                 width: 1.0,
               ),
-              //image: _getImage(),
             ),
             alignment: Alignment.center,
-            child: (_uint8list == null)
-                ? Text(
-                    'Sin imagen',
-                    textScaleFactor: 1.0,
-                    style: TextStyle(
-                      color: Colors.black26,
-                      fontFamily: 'ReemKufi',
-                      fontSize: 16,
-                      letterSpacing: 0.4,
-                    ),
-                  )
-                : ClipRRect(
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserLoaded) {
+                  return ClipRRect(
                     borderRadius: BorderRadius.circular(widget.size / 2),
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: MemoryImage(_uint8list),
+                          image:
+                              MemoryImage(state.user?.image?.uint8listBase64),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
+                  );
+                } else if (state is UserUpdateProfileImageLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                return Text(
+                  'Sin imagen',
+                  textScaleFactor: 1.0,
+                  style: TextStyle(
+                    color: Colors.black26,
+                    fontFamily: 'ReemKufi',
+                    fontSize: 16,
+                    letterSpacing: 0.4,
                   ),
+                );
+              },
+            ),
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              mini: widget.size <= 100,
-              backgroundColor: CustomColors.blue,
-              elevation: 2.0,
-              child: Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                // TODO: Handle image
-                showImagePickerBottomSheet(context);
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                return FloatingActionButton(
+                  mini: widget.size <= 100,
+                  backgroundColor: 
+                    (state is UserUpdateProfileImageLoading || 
+                     state is UserUpdateLoading) 
+                      ? Colors.grey 
+                      : CustomColors.blue,
+                  elevation: 2.0,
+                  child: Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                  ),
+                  onPressed: 
+                    (state is UserUpdateProfileImageLoading || 
+                     state is UserUpdateLoading) 
+                      ? null 
+                      : () => showImagePickerBottomSheet(context),
+                );
               },
             ),
           ),
@@ -482,8 +475,7 @@ class _UserAvatarState extends State<UserAvatar> with PickImageMixin {
 
   @override
   void onImagePicked(File file) {
-    setState(() {
-      _uint8list = file.readAsBytesSync();
-    });
+    BlocProvider.of<UserBloc>(context)
+        .add(UserImageProfileUpdated(imageFile: file));
   }
 }

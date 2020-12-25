@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:meta/meta.dart';
 
 import '../../../models/user.dart';
+import '../../../models/image.dart';
 
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
@@ -9,6 +12,8 @@ abstract class UserRepository {
       'Registro correcto, inicie sesión para empezar a crear recetas';
   static final String updateSuccessMessage =
       'Usuario actualizado correctamente';
+  static final String updateProfileImageSuccessMessage =
+      'Imagen de perfil actualizada correctamente';
 
   User get loadedUser;
   bool get isUserLoaded;
@@ -27,5 +32,6 @@ abstract class UserRepository {
   });
   Future<bool> logOut();
   Future<User> updateAuthenticatedUser(User user);
+  Future<Image> updateProfileImage(File file);
   Future<User> loadPrefsUser();
 }

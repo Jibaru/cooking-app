@@ -18,6 +18,7 @@ final String loginUrl = '$domain/users/login';
 final String signinUrl = '$domain/users/signin';
 final String getOneUserUrl = '$domain/users/:id';
 final String updateOneUserUrl = '$domain/users/:id';
+final String updateProfileImageUrl = '$domain/users/profile-image/:id';
 
 // User Notification Services
 final String getAllUserNotificationsUrl = '$domain/user-notifications';

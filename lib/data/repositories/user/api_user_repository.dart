@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:cooking_app/data/repositories/user/user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/user.dart';
+import '../../../models/image.dart';
 import '../../url_services.dart';
+import 'user_repository.dart';
 import 'user_exception.dart';
 
 class ApiUserRepository implements UserRepository {
@@ -184,14 +186,14 @@ class ApiUserRepository implements UserRepository {
     assert(user != null);
 
     try {
-      final Response response =
-          await _client.put(updateOneUserUrl.replaceAll(':id', _authenticatedUser.id.toString()),
-              data: {
-                "firstName": user.firstName,
-                "lastName": user.lastName,
-                "email": user.email,
-                "nickName": user.nickName,
-              }..removeWhere((key, value) => value == null));
+      final Response response = await _client.put(
+          updateOneUserUrl.replaceAll(':id', _authenticatedUser.id.toString()),
+          data: {
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "email": user.email,
+            "nickName": user.nickName,
+          }..removeWhere((key, value) => value == null));
 
       _authenticatedUser = _authenticatedUser.copyWith(
         firstName: response.data['user']['firstName'],
@@ -231,6 +233,67 @@ class ApiUserRepository implements UserRepository {
     return _authenticatedUser;
   }
 
+  /// Update the `_authenticatedUser` Profile Image to api
+  /// Recieves `file` with new image data to update
+  /// throw [UserException] if don't receives 200 status code or
+  /// any other error happens
+  /// returns the [Image] instance updated
+  Future<Image> updateProfileImage(File file) async {
+    assert(_authenticatedUser != null);
+    assert(file != null);
+
+    Image image;
+
+    try {
+      final FormData formData =
+          FormData.fromMap({'file': await MultipartFile.fromFile(file.path)});
+
+      final Response response = await _client.put(
+        updateProfileImageUrl.replaceAll(
+            ':id', _authenticatedUser.id.toString()),
+        data: formData,
+        options: Options(
+          contentType: 'multipart/form-data',
+        ),
+      );
+
+      image = Image.fromMap(response.data['fileData']);
+
+      _authenticatedUser = _authenticatedUser.copyWith(
+        image: image,
+      );
+
+      if ((await _getPrefsUser()) != null) {
+        _setPrefsUser(_authenticatedUser);
+      }
+    } on DioError catch (e) {
+      print(e.message);
+      print(e.response);
+      if (e.type == DioErrorType.RESPONSE) {
+        List errors = e.response.data['errors'];
+
+        if (errors != null) {
+          String message = errors
+              .map((element) => element['msg'])
+              .toList()
+              .reduce((value, element) => value + ' \n' + element);
+
+          throw InvalidParametersException(message);
+        } else {
+          throw e;
+        }
+      } else if (e.type == DioErrorType.SEND_TIMEOUT ||
+          e.type == DioErrorType.CONNECT_TIMEOUT) {
+        throw TimeoutUpdateUserException('Tiempo de espera superado');
+      }
+    } on Exception catch (e) {
+      print(e);
+      throw NotUpdatedUserException('Ocurrió un problema. Intente de nuevo');
+    }
+
+    return image;
+  }
+
   /// Load the `_authenticatedUser` from `shared_preferences`
   /// returns the `_authenticatedUser` if exists and [null] else not
   @override
@@ -255,7 +318,6 @@ class ApiUserRepository implements UserRepository {
 
     return User.fromJson(userSerializated);
   }
-
 
   /// Set the `_authenticatedUser` to `shared_preferences`
   /// returns the [true] if set success and [false] else not

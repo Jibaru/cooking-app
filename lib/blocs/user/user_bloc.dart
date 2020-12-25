@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:cooking_app/data/repositories/user/user_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../data/repositories/user/user_repository.dart';
+import '../../data/repositories/user/user_exception.dart';
 import '../../models/user.dart';
 
 part 'user_event.dart';
@@ -32,6 +32,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       yield await _mapUserLogOutToState(event);
     } else if (event is UserUpdated) {
       yield* _mapUserUpdatedToState(event);
+    } else if (event is UserImageProfileUpdated) {
+      yield* _mapUserImageProfileUpdatedToState(event);
     }
   }
 
@@ -61,8 +63,23 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
 
       yield UserUpdateSuccess(
-        user: _userRepository.loadedUser, 
+        user: _userRepository.loadedUser,
         message: UserRepository.updateSuccessMessage,
+      );
+    } on UserException catch (e) {
+      yield UserUpdateFailed(message: e.message);
+    }
+  }
+
+  Stream<UserState> _mapUserImageProfileUpdatedToState(UserImageProfileUpdated event) async* {
+    yield UserUpdateProfileImageLoading();
+
+    try {
+      await _userRepository.updateProfileImage(event.imageFile);
+
+      yield UserUpdateSuccess(
+        user: _userRepository.loadedUser,
+        message: UserRepository.updateProfileImageSuccessMessage,
       );
     } on UserException catch (e) {
       yield UserUpdateFailed(message: e.message);

@@ -38,3 +38,5 @@ class UserUpdateFailed extends UserState {
   @override
   List<Object> get props => [message];
 }
+
+class UserUpdateProfileImageLoading extends UserState {}

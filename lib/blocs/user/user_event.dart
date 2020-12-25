@@ -20,10 +20,10 @@ class UserUpdated extends UserEvent {
   List<Object> get props => [fields];
 }
 
-class UserImageChanged extends UserEvent {
+class UserImageProfileUpdated extends UserEvent {
   final File imageFile;
 
-  const UserImageChanged({@required this.imageFile});
+  const UserImageProfileUpdated({@required this.imageFile});
 
   @override
   List<Object> get props => [imageFile];
